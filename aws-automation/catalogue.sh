@@ -17,9 +17,7 @@
 #   - DNS for MongoDB must be resolvable
 # ------------------------------------------------------------------
 
-# -------------------- SAFETY --------------------
-# Exit immediately if any command fails
-set -e
+
 
 # -------------------- VARIABLES --------------------
 USERID=$(id -u)

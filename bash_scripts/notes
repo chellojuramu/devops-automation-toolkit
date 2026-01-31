@@ -1,0 +1,78 @@
+pseudo code means no syntax ,just assumption
+variables are like containers that holds something
+
+PERSON1=ramu #no space between value and =
+
+$PERSON1
+
+dynamic passing variables
+arguments args == parameters
+$1=suresh
+$2=ramesh
+
+
+$1 $2 ...$N args passed to script $@
+$@ vs $*
+$@ treats args seperately
+$* treats as single args
+
+all variables passed to script : $#
+script name :$0
+present which direcrory you are in : $PWD 
+who is running this script : $USER 
+Home directory of the user: $HOME
+PID of script: $$
+sleep 100 &
+Background proccess id: $!
+number of vars passed to script: $#
+
+
+/////data types
+
+variables are holding data..
+mobile number -> numbers
+integers -> -33,768 ->33,768
+float -> 45.90
+decimal -> long number
+complex -> 4+8i
+names -> string
+major? -> yes or no boolean
+skills -> map or dictionary
+    devops: 4 ->key -> value
+    docker: 3
+
+
+#!/bin/bash
+# ^ This is the "Shebang". It tells the computer: "Use the Bash program to run this file."
+
+# 1. CAPTURE THE USER ID
+# $(id -u) runs the Linux command 'id -u' which gives your numeric ID.
+# Root is always 0. Regular users (like ubuntu) are usually 1000+.
+USERID=$(id -u)
+
+# 2. CHECK IF USER IS ROOT (The Bouncer)
+# -ne means "Not Equal".
+# Logic: "If your ID is NOT 0 (not Root), then stop immediately."
+# NOTE: There is a syntax error in your snippet. You need a space before the closing ].
+# It should be: [ $USERID -ne 0 ]
+if [ $USERID -ne 0 ]; then
+    echo "Please run this script with root user access"
+    # exit 1 means "Stop the script and signal Error (1) to the system."
+    exit 1
+fi
+
+# 3. THE ACTUAL WORK
+echo "Installing Nginx"
+# -y means "Yes". Don't ask "Are you sure?" just do it.
+dnf install nginx -y
+
+# 4. CHECK IF IT WORKED (The Quality Control)
+# $? is a special variable that holds the status of the VERY LAST command (dnf install).
+# 0 = Success. Anything else (1-127) = Failure.
+if [ $? -ne 0 ]; then
+    echo "installing nginx....FAILURE"
+    exit 1 # Stop here because it failed.
+else
+    echo "Installing Nginx...SUCCESS"
+    # The script continues naturally or ends here happily.
+fi  

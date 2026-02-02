@@ -75,6 +75,13 @@ VALIDATE $? "Downloading cart application code"
 cd /app
 VALIDATE $? "Moving to /app directory"
 
+# Clean existing code (safe redeployment)
+rm -rf /app/*
+VALIDATE $? "Removing existing application code"
+
+# Extract application
+unzip /tmp/cart.zip &>>"$LOGS_FILE"
+
 # -------------------- INSTALL DEPENDENCIES --------------------
 # Install NodeJS dependencies defined in package.json
 npm install &>>"$LOGS_FILE"

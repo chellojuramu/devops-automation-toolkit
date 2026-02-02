@@ -1,10 +1,10 @@
 #!/bin/bash
 # ------------------------------------------------------------------
-# Script Name : user.sh
+# Script Name : cart.sh
 # Author      : Ramu Chelloju
 # Purpose     :
-#   - Install and configure user for RoboShop
-#   - Configure user to backend services
+#   - Install and configure cart for RoboShop
+#   - Configure cart to backend services
 #
 # OS          : RHEL / Amazon Linux
 # ------------------------------------------------------------------
@@ -38,7 +38,7 @@ VALIDATE() {
         echo -e "$2 ... $G SUCCESS $N" | tee -a "$LOGS_FILE"
     fi
 }
-echo "Configuring RoboShop user..."
+echo "Configuring RoboShop cart..."
 
 # -------------------- NodejS INSTALLATION --------------------
 dnf module disable nodejs -y &>>"$LOGS_FILE"
@@ -65,24 +65,15 @@ fi
 # Create /app directory for application code
 mkdir -p /app
 VALIDATE $? "Creating /app directory"
-
 # -------------------- DOWNLOAD APPLICATION CODE --------------------
-curl -o /tmp/user.zip \
-    https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip \
+curl -o /tmp/cart.zip \
+    https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip \
     &>>"$LOGS_FILE"
-VALIDATE $? "Downloading user application code"
+VALIDATE $? "Downloading cart application code"
 
 # Move into /app directory
 cd /app
 VALIDATE $? "Moving to /app directory"
-
-# Clean existing code (safe redeployment)
-rm -rf /app/*
-VALIDATE $? "Removing existing application code"
-
-# Extract application
-unzip /tmp/user.zip &>>"$LOGS_FILE"
-VALIDATE $? "Extracting user code"
 
 # -------------------- INSTALL DEPENDENCIES --------------------
 # Install NodeJS dependencies defined in package.json
@@ -91,13 +82,13 @@ VALIDATE $? "Installing NodeJS dependencies"
 
 # -------------------- SYSTEMD SERVICE SETUP --------------------
 # Copy service file to systemd directory
-cp "$SCRIPT_DIR/user.service" /etc/systemd/system/user.service
-VALIDATE $? "Copying user systemd service file"
+cp "$SCRIPT_DIR/cart.service" /etc/systemd/system/cart.service
+VALIDATE $? "Copying cart systemd service file"
 
 # Reload systemd to recognize new service
 systemctl daemon-reload &>>"$LOGS_FILE"
 
-# Enable and start user service
-systemctl enable user &>>"$LOGS_FILE"
-systemctl start user &>>"$LOGS_FILE"
-VALIDATE $? "Starting and enabling user service"
+# Enable and start cart service
+systemctl enable cart &>>"$LOGS_FILE"
+systemctl start cart &>>"$LOGS_FILE"
+VALIDATE $? "Starting and enabling cart service"

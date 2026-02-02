@@ -3,8 +3,8 @@
 # Script Name : mysql.sh
 # Author      : Ramu Chelloju
 # Purpose     :
-#   - Install and configure cart for RoboShop
-#   - Configure cart to backend services
+#   - Install and configure mysql for RoboShop
+#   - Configure mysql to backend services
 #
 # OS          : RHEL / Amazon Linux
 # ------------------------------------------------------------------

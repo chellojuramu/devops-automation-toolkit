@@ -1,64 +1,95 @@
-# AWS Automation – RoboShop
+# RoboShop Microservices Deployment Automation (AWS)
 
-This directory contains **end-to-end automation scripts** to provision AWS infrastructure and deploy the **RoboShop microservices application** using real-world DevOps practices.
-
-The goal is to move from **manual server setup** to **repeatable, reliable automation**.
+This repository contains a professional-grade DevOps automation toolkit designed to bootstrap, configure, and deploy the multi-tier **RoboShop microservices application** on **RHEL / Amazon Linux 9**.
 
 ---
 
-## 🚀 What this project does
+## 🚀 Architectural Overview
 
-- Provisions EC2 instances using **AWS CLI**
-- Automatically creates DNS records using **Route53**
-- Installs and configures core services:
-  - MongoDB
-  - Redis
-  - Frontend (Nginx)
-  - Catalogue service
-  - User service
-- Manages applications using **systemd services**
-- Adds logging and validation to every step
+The project automates a distributed system consisting of:
 
----
+- **Node.js**
+- **Java**
+- **Python**
+- **GoLang**
 
-## 🔐 Configuration approach (Important)
+These services are integrated with distributed backend systems such as:
 
-All application configuration is handled using **external environment files**, not hardcoded values.
-
-This follows **production best practices**:
-- Secrets are not committed to Git
-- Scripts stay reusable across environments
-- Configuration can change without touching code
-
-Before starting services, environment files must be created **on the server**.
-
-Example:
-- `/etc/roboshop/catalogue.env`
-- `/etc/roboshop/user.env`
-
-These files are loaded using `EnvironmentFile` in systemd services.
+- MongoDB  
+- MySQL  
+- Redis  
+- RabbitMQ  
 
 ---
 
-## ▶️ How to use (high level)
+## 🛠 Features & Engineering Standards
 
-1. Provision infrastructure using AWS CLI automation
-2. Configure database and cache services
-3. Create required environment files on the instance
-4. Deploy application services
-5. Configure frontend and reverse proxy
+### 🔹 Idempotency  
+All scripts are designed to be run multiple times without causing:
+
+- System inconsistencies  
+- Duplicate users  
+- Duplicate directories  
+
+### 🔹 Zero-Secret Footprint  
+- No credentials or hostnames are hardcoded  
+- All secrets are passed dynamically  
+- Environment-specific configurations are managed using localized `.env` files  
+
+### 🔹 Decoupled Configuration  
+- Uses **SystemD EnvironmentFile**  
+- Keeps application logic separate from environment configuration  
+
+### 🔹 Centralized Logging  
+- All automation logs are stored under: /var/log/shell-roboshop/
+
+- Enables easy debugging and auditability  
+
+### 🔹 Defensive Scripting  
+- Root user validation  
+- Real-time execution checks  
+- Proper error handling at each step  
 
 ---
 
-## 🧠 Key DevOps concepts practiced
+## 📖 Deployment Guide
 
-- Infrastructure as Code (AWS CLI)
-- systemd service automation
-- Externalized configuration
-- Idempotent scripting
-- Logging and validation
-- Real microservice deployment workflow
+### 1. Prerequisites
+
+Before executing the deployment scripts, the following **environment files must be created** on target instances.
+
+This ensures a clean separation between automation logic and environment-specific configuration.
+
+| Service  | Required File Path             | Key Variables to Include |
+|--------|--------------------------------|--------------------------|
+| Cart / User | `/etc/roboshop/cart.env`      | REDIS_HOST, CATALOGUE_HOST, CATALOGUE_PORT |
+| Shipping | `/etc/roboshop/shipping.env`  | CART_ENDPOINT, DB_HOST |
+| Payment  | `/etc/roboshop/payment.env`   | CART_HOST, USER_HOST, AMQP_HOST, AMQP_USER, AMQP_PASS |
+| Dispatch | `/etc/roboshop/dispatch.env`  | AMQP_HOST, AMQP_USER, AMQP_PASS |
 
 ---
 
-This folder represents **hands-on DevOps automation**, built step by step from class learning and real practice.
+### 2. Execution & Argument Passing
+
+To maintain high security, sensitive credentials and dynamic endpoints are passed as positional parameters at runtime.
+
+#### Usage Pattern:
+## 📂 Repository Structure
+
+```plaintext
+aws-automation/
+├── common.sh       # Reusable functions (Validation, Logging, User Creation)
+├── mongodb.sh      # NoSQL Database setup
+├── mysql.sh        # SQL Database setup & password parameterization
+├── redis.sh        # In-memory cache configuration
+├── rabbitmq.sh     # Message broker setup & idempotent user management
+├── catalogue.sh    # Node.js backend setup
+├── cart.sh         # Node.js backend setup
+├── user.sh         # Node.js backend setup
+├── shipping.sh     # Java/Maven build & schema loading
+├── payment.sh      # Python/uWSGI application deployment
+└── dispatch.sh     # GoLang binary compilation & deployment
+```
+
+
+

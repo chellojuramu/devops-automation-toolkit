@@ -1,0 +1,11 @@
+[Unit]
+Description=Shipping Service
+
+[Service]
+User=roboshop
+EnvironmentFile=/etc/roboshop/shipping.env
+ExecStart=/bin/java -jar /app/shipping.jar
+SyslogIdentifier=shipping
+
+[Install]
+WantedBy=multi-user.target

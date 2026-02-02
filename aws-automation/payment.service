@@ -1,0 +1,15 @@
+[Unit]
+Description=Payment Service
+
+[Service]
+User=root
+WorkingDirectory=/app
+# Using the '-' prefix so the service doesn't fail if the file is missing
+EnvironmentFile=-/etc/roboshop/payment.env
+
+ExecStart=/usr/local/bin/uwsgi --ini payment.ini
+ExecStop=/bin/kill -9 $MAINPID
+SyslogIdentifier=payment
+
+[Install]
+WantedBy=multi-user.target

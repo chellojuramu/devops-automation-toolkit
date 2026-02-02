@@ -15,13 +15,22 @@ LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$(basename "$0")
 LOGS_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 
-# -------------------- BACKEND SERVICE IPs --------------------
-CATALOGUE_IP="172.31.3.3"
-USER_IP="172.31.10.11"
-CART_IP="172.31.10.12"
-SHIPPING_IP="172.31.10.13"
-PAYMENT_IP="172.31.10.14"
+# -------------------- DOMAIN CONFIGURATION --------------------
+# Capture the base domain from the first argument (e.g., service.wiz.in)
+BASE_DOMAIN=$1
 
+if [ -z "$BASE_DOMAIN" ]; then
+    echo -e "$R Error: Base domain not provided. $N"
+    echo -e "Usage: sudo sh frontend.sh <base-domain>"
+    exit 1
+fi
+
+# Constructing service endpoints dynamically
+CATALOGUE_HOST="catalogue.${BASE_DOMAIN}"
+USER_HOST="user.${BASE_DOMAIN}"
+CART_HOST="cart.${BASE_DOMAIN}"
+SHIPPING_HOST="shipping.${BASE_DOMAIN}"
+PAYMENT_HOST="payment.${BASE_DOMAIN}"
 # -------------------- COLORS --------------------
 R="\e[31m"
 G="\e[32m"
@@ -74,6 +83,7 @@ unzip /tmp/frontend.zip &>>"$LOGS_FILE"
 VALIDATE $? "Extracting frontend content"
 
 # -------------------- NGINX REVERSE PROXY CONFIG --------------------
+# Using domain names instead of hardcoded private IPs
 cat >/etc/nginx/nginx.conf <<EOF
 user nginx;
 worker_processes auto;
@@ -101,11 +111,12 @@ http {
             try_files \$uri /images/placeholder.jpg;
         }
 
-        location /api/catalogue/ { proxy_pass http://${CATALOGUE_IP}:8080/; }
-        location /api/user/ { proxy_pass http://${USER_IP}:8080/; }
-        location /api/cart/ { proxy_pass http://${CART_IP}:8080/; }
-        location /api/shipping/ { proxy_pass http://${SHIPPING_IP}:8080/; }
-        location /api/payment/ { proxy_pass http://${PAYMENT_IP}:8080/; }
+        # Dynamic Proxy Pass using internal DNS names
+        location /api/catalogue/ { proxy_pass http://${CATALOGUE_HOST}:8080/; }
+        location /api/user/      { proxy_pass http://${USER_HOST}:8080/; }
+        location /api/cart/      { proxy_pass http://${CART_HOST}:8080/; }
+        location /api/shipping/  { proxy_pass http://${SHIPPING_HOST}:8080/; }
+        location /api/payment/   { proxy_pass http://${PAYMENT_HOST}:8080/; }
 
         location /health {
             stub_status on;
@@ -114,8 +125,7 @@ http {
     }
 }
 EOF
-
-VALIDATE $? "Configuring Nginx reverse proxy"
+VALIDATE $? "Configuring Nginx reverse proxy with dynamic domains"
 
 # -------------------- RESTART NGINX --------------------
 systemctl restart nginx &>>"$LOGS_FILE"

@@ -1,0 +1,10 @@
+[Unit]
+Description = Dispatch Service
+[Service]
+User=roboshop
+EnvironmentFile=-/etc/roboshop/dispatch.env
+ExecStart=/app/dispatch
+SyslogIdentifier=dispatch
+
+[Install]
+WantedBy=multi-user.target

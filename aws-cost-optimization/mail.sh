@@ -8,26 +8,36 @@ ALERT_TYPE=$4
 SERVER_IP=$5
 TO_TEAM=$6
 
-# --- SANITIZATION ---
-# This is crucial for reports! 
-# We escape special characters so the large report doesn't crash the 'sed' command.
-# formatting trick: We don't change newlines here; we handle them in HTML (pre tag).
-FINAL_MESSAGE_BODY=$(echo "$MESSAGE_BODY" | sed -e 's/[]\/$*.^[]/\\&/g')
+# --- STEP 1: SAVE BODY TO FILE ---
+# We save the report to a temp file. This prevents the "sed" crash.
+BODY_FILE=$(mktemp)
+echo "$MESSAGE_BODY" > "$BODY_FILE"
 
-# --- TEMPLATE MERGE ---
-# We inject the data into template.html
-FINAL_MESSAGE=$(sed -e "s/TO_TEAM/$TO_TEAM/g" \
-                    -e "s/ALERT_TYPE/$ALERT_TYPE/g" \
-                    -e "s/SERVER_IP/$SERVER_IP/g" \
-                    -e "s/MESSAGE/$FINAL_MESSAGE_BODY/g" \
-                    template.html)
+# --- STEP 2: PREPARE EMAIL ---
+FINAL_EMAIL=$(mktemp)
 
-# --- SEND EMAIL ---
+# 2a. Replace simple variables (Team Name, IP, Alert Type) using standard sed
+sed -e "s/TO_TEAM/$TO_TEAM/g" \
+    -e "s/ALERT_TYPE/$ALERT_TYPE/g" \
+    -e "s/SERVER_IP/$SERVER_IP/g" \
+    template.html > "$FINAL_EMAIL.tmp"
+
+# 2b. INJECT THE REPORT BODY (The Fix)
+# We use the 'r' command to READ the file, instead of 's' to replace text.
+# This creates a safe way to insert huge reports.
+sed -e "/MESSAGE/r $BODY_FILE" \
+    -e "/MESSAGE/d" \
+    "$FINAL_EMAIL.tmp" > "$FINAL_EMAIL"
+
+# --- STEP 3: SEND EMAIL ---
 echo "Sending email to $TO_ADDRESS..."
 {
     echo "To: $TO_ADDRESS"
     echo "Subject: $SUBJECT"
     echo "Content-Type: text/html"
     echo ""
-    echo "$FINAL_MESSAGE"
+    cat "$FINAL_EMAIL"
 } | msmtp "$TO_ADDRESS"
+
+# --- CLEANUP ---
+rm -f "$BODY_FILE" "$FINAL_EMAIL" "$FINAL_EMAIL.tmp"

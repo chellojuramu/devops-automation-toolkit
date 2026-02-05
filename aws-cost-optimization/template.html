@@ -1,31 +1,128 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>AWS Report</title>
     <style>
-        /* CSS to make the report look like code/terminal output */
-        .report-box {
-            background-color: #f4f4f4;
-            border: 1px solid #ddd;
-            padding: 10px;
-            font-family: monospace; /* Looks like terminal text */
-            white-space: pre-wrap;  /* Keeps the newlines correct */
+        /* Base Body Style */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f4f4; 
+            margin: 0; 
+            padding: 20px; 
+        }
+
+        /* Main Card Container */
+        .container { 
+            max-width: 650px; 
+            margin: 0 auto; 
+            background-color: #ffffff; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+            border: 1px solid #e0e0e0; 
+        }
+
+        /* Header (Dark Teal with Yellow Highlight) */
+        .header { 
+            background-color: #0f393b; /* Dark Teal like the image */
+            color: #ffffff; 
+            padding: 30px; 
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* The Yellow Highlight Effect */
+        .highlight { 
+            background-color: #ffe680; 
+            color: #000; 
+            padding: 4px 8px; 
+            border-radius: 2px;
+        }
+
+        .header-subtitle {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Content Area */
+        .content { 
+            padding: 30px; 
+            color: #333; 
+            line-height: 1.6;
+        }
+
+        /* Labels (Like Name: Email: in your image) */
+        .label { 
+            font-weight: bold; 
+            color: #0f393b; 
+            display: block; 
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* The Gray Box for the Report */
+        .report-box { 
+            background-color: #f9fafb; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 8px; 
+            padding: 20px; 
+            font-family: 'Courier New', monospace; /* Terminal Font */
+            white-space: pre-wrap; /* Keeps formatting */
+            font-size: 13px; 
+            color: #2d3748; 
+            overflow-x: auto;
+        }
+
+        /* Footer */
+        .footer { 
+            background-color: #f1f1f1; 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 12px; 
+            color: #666; 
+            border-top: 1px solid #ddd; 
         }
     </style>
 </head>
 <body>
-    <p>Hi TO_TEAM,</p>
-    
-    <p>Here is the daily <strong><span style="color: #0066cc;">ALERT_TYPE</span></strong>.</p>
-    
-    <p><strong>Resource Report:</strong></p>
-    
-    <div class="report-box">
+
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <span class="highlight">AWS</span> <span class="highlight">Cost Tracker</span>
+            </div>
+            <div class="header-subtitle">
+                Daily Resource Utilization & Cost Report
+            </div>
+        </div>
+
+        <div class="content">
+            <p><strong>Hello TO_TEAM,</strong></p>
+            <p>This is an automated report to help track active resources and identify potential cost leaks.</p>
+
+            <span class="label">Report Type:</span>
+            <span>ALERT_TYPE</span>
+
+            <span class="label">Source Server IP:</span>
+            <span>SERVER_IP</span>
+
+            <span class="label">Resource Usage Logs:</span>
+            <div class="report-box">
 MESSAGE
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated email notification from your DevOps Automation Toolkit.</p>
+            <p>&copy; 2026 CloudOps Infrastructure Team</p>
+        </div>
     </div>
-    
-    <p>&nbsp;</p>
-    <p>Regards,</p>
-    <p>CloudOps Automation</p>
+
 </body>
 </html>
